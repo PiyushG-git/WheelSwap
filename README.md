@@ -2,6 +2,10 @@
 
 WheelSwap is a Peer-to-Peer Vehicle Swap & Rental Platform designed to enable users to temporarily swap their vehicles or rent them out in a secure, decentralized fashion.
 
+### 🌐 Deployed Applications
+- **Frontend Client**: [https://wheel-swap-chi.vercel.app](https://wheel-swap-chi.vercel.app)
+- **Backend Server API**: [https://wheelswap-backend.onrender.com/api/v1](https://wheelswap-backend.onrender.com/api/v1)
+
 ## 🚀 Technology Stack
 - **Backend**: Node.js, Express, TypeScript, Prisma (PostgreSQL), Redis (Caching), Cloudinary (Media storage)
 - **Database**: PostgreSQL
