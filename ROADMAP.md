@@ -89,7 +89,7 @@
 
 ## PHASE 2 — KYC Verification
 
-> **Goal:** Allow users to submit identity documents; admin approves before they can list or swap.
+> **Goal:** Allow users to submit identity documents; admin reviews manually.
 
 ### 2.1 KYC Submission
 - ✅ `src/validators/kyc.validator.ts`
@@ -112,7 +112,7 @@
 
 ## PHASE 3 — Vehicle Management
 
-> **Goal:** Owners can register vehicles; admin approves before listing goes live.
+> **Goal:** Owners can register vehicles; admin approves and KYC verification unlocks public visibility.
 
 ### 3.1 Vehicle Registration
 - ✅ `src/validators/vehicle.validator.ts`
@@ -120,9 +120,9 @@
 - ✅ `src/services/vehicle.service.ts`
 - ✅ `src/controllers/vehicle.controller.ts`
 - ✅ `src/routes/v1/vehicle.routes.ts`
-- ✅ **POST** `/api/v1/vehicles` — KYC required
+- ✅ **POST** `/api/v1/vehicles` — Creation allowed instantly (visible only to owner until KYC approved)
 - ✅ **GET** `/api/v1/vehicles/my/vehicles`
-- ✅ **GET** `/api/v1/vehicles/:id`
+- ✅ **GET** `/api/v1/vehicles/:id` — Details hidden from others until owner KYC approved
 - ✅ **PATCH** `/api/v1/vehicles/:id`
 - ✅ **DELETE** `/api/v1/vehicles/:id` — Soft delete
 
@@ -132,9 +132,9 @@
 - ✅ **PATCH** `/api/v1/vehicles/:id/images/:imageId/primary`
 
 ### 3.3 Vehicle Search
-- ✅ **GET** `/api/v1/vehicles` — Filter by city, type, seats, fuel, price, dates
+- ✅ **GET** `/api/v1/vehicles` — Filter by city, type, seats, fuel, dates (Requires owner to be KYC verified)
 - ✅ Redis caching (5 min TTL)
-- ✅ Sorting: price_asc, price_desc, newest
+- ✅ Sorting: newest
 
 ### 3.4 Vehicle Availability Calendar
 - ✅ **GET** `/api/v1/vehicles/:id/availability`
