@@ -166,6 +166,9 @@ export const VehicleRepository = {
     const where: Prisma.VehicleWhereInput = {
       status: VehicleStatus.ACTIVE,
       deletedAt: null,
+      owner: {
+        isKycVerified: true,
+      },
     };
 
     if (filters.city) where.city = { contains: filters.city, mode: 'insensitive' };

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { VehicleController } from '../../controllers/vehicle.controller';
-import { authenticate, authorize, requireKyc } from '../../middlewares/auth.middleware';
+import { authenticate, authorize, optionalAuthenticate } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validate.middleware';
 import { uploadVehicleImages } from '../../middlewares/upload.middleware';
 import { uploadLimiter } from '../../middlewares/rateLimit.middleware';
@@ -44,24 +44,22 @@ router.patch(
   VehicleController.adminReject
 );
 
-// ── Vehicle creation ───────────────────────────
+// ── Vehicle creation (Removed requireKyc) ──────
 router.post(
   '/',
   authenticate,
-  requireKyc,
   validate(CreateVehicleSchema),
   VehicleController.create
 );
 
-// ── Public parametric routes ──────────────────
-router.get('/:id', VehicleController.getById);
-router.get('/:id/availability', VehicleController.getAvailability);
+// ── Public parametric routes (Added optionalAuthenticate)
+router.get('/:id', optionalAuthenticate, VehicleController.getById);
+router.get('/:id/availability', optionalAuthenticate, VehicleController.getAvailability);
 
-// ── Protected vehicle modification ────────────
+// ── Protected vehicle modification (Removed requireKyc)
 router.patch(
   '/:id',
   authenticate,
-  requireKyc,
   validate(UpdateVehicleSchema),
   VehicleController.update
 );

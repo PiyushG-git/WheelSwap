@@ -50,6 +50,44 @@ export async function authenticate(
 }
 
 /**
+ * Parses JWT access token optionally without blocking request if missing or expired.
+ * Attaches decoded user to req.user if valid.
+ */
+export async function optionalAuthenticate(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    let payload;
+    try {
+      payload = verifyAccessToken(token);
+    } catch {
+      // Ignore invalid or expired token for optional auth
+      return next();
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.sub, deletedAt: null },
+      select: { id: true, email: true, role: true, isActive: true },
+    });
+
+    if (user && user.isActive) {
+      req.user = { id: user.id, email: user.email, role: user.role };
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Role-based access control middleware factory.
  * Usage: authorize(UserRole.ADMIN)
  */

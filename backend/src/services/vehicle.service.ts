@@ -7,7 +7,7 @@ import { Errors } from '../utils/appError.util';
 import { parsePagination, buildPaginationMeta } from '../utils/response.util';
 import { cache } from '../config/redis.config';
 import type { CreateVehicleInput, UpdateVehicleInput } from '../validators/vehicle.validator';
-import { VehicleType, FuelType, Transmission, VehicleStatus } from '@prisma/client';
+import { VehicleType, FuelType, Transmission, VehicleStatus, UserRole } from '@prisma/client';
 
 export const VehicleService = {
   // ── CRUD ─────────────────────────────────────
@@ -15,7 +15,6 @@ export const VehicleService = {
   async create(ownerId: string, input: CreateVehicleInput) {
     const owner = await UserRepository.findById(ownerId);
     if (!owner) throw Errors.notFound('User');
-    if (!owner.isKycVerified) throw Errors.forbidden('KYC verification required to list a vehicle');
 
     const vehicle = await VehicleRepository.create({
       owner: { connect: { id: ownerId } },
@@ -27,14 +26,26 @@ export const VehicleService = {
     return vehicle;
   },
 
-  async getById(vehicleId: string) {
+  async getById(vehicleId: string, requesterId?: string, requesterRole?: string) {
     const cached = await cache.get<unknown>(cache.keys.vehicleDetail(vehicleId));
-    if (cached) return cached;
+    let vehicle: any;
 
-    const vehicle = await VehicleRepository.findById(vehicleId);
-    if (!vehicle || vehicle.status === VehicleStatus.DELETED) throw Errors.notFound('Vehicle');
+    if (cached) {
+      vehicle = cached;
+    } else {
+      vehicle = await VehicleRepository.findById(vehicleId);
+      if (!vehicle || vehicle.status === VehicleStatus.DELETED) throw Errors.notFound('Vehicle');
+      await cache.set(cache.keys.vehicleDetail(vehicleId), vehicle, 120);
+    }
 
-    await cache.set(cache.keys.vehicleDetail(vehicleId), vehicle, 120);
+    // Owner checks & KYC visibility
+    const isOwner = requesterId && vehicle.ownerId === requesterId;
+    const isAdmin = requesterRole && (requesterRole === UserRole.ADMIN || requesterRole === UserRole.SUPER_ADMIN);
+
+    if (!vehicle.owner.isKycVerified && !isOwner && !isAdmin) {
+      throw Errors.forbidden('This vehicle owner has not completed KYC verification yet.');
+    }
+
     return vehicle;
   },
 

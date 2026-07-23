@@ -19,7 +19,11 @@ export const VehicleController = {
   }),
 
   getById: asyncHandler(async (req: Request, res: Response) => {
-    const vehicle = await VehicleService.getById(req.params.id);
+    const vehicle = await VehicleService.getById(
+      req.params.id,
+      req.user?.id,
+      req.user?.role
+    );
     ApiResponseBuilder.success(res, vehicle);
   }),
 
