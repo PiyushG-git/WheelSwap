@@ -1,0 +1,260 @@
+// =============================================================
+// WheelSwap — Prisma Schema (Phase 1, 2, 3)
+// PostgreSQL | UUID PKs | Soft Deletes
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum VehicleType {
+  SEDAN
+  SUV
+  HATCHBACK
+  TRUCK
+  VAN
+  MINIVAN
+  COUPE
+  CONVERTIBLE
+  PICKUP
+  BUS
+  TWO_WHEELER
+  THREE_WHEELER
+  OTHER
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  CNG
+  LPG
+  HYBRID
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+  SEMI_AUTOMATIC
+  CVT
+}
+
+enum VehicleStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+// ─────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String?
+  googleId      String?   @unique
+  name          String
+  phone         String?   @unique
+  avatarUrl     String?
+  role          UserRole  @default(USER)
+
+  isEmailVerified Boolean @default(false)
+  isPhoneVerified Boolean @default(false)
+  isKycVerified   Boolean @default(false)
+  isActive        Boolean @default(true)
+
+  // Bio
+  bio           String?
+  city          String?
+  state         String?
+  country       String    @default("India")
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  // Relations (Phase 1-3 only)
+  kycDocument   KycDocument?
+  vehicles      Vehicle[]
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+  @@index([isKycVerified])
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// REFRESH TOKEN
+// ─────────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────
+// KYC
+// ─────────────────────────────────────────────
+
+model KycDocument {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  aadhaarNumber   String?
+  aadhaarFrontUrl String?
+  aadhaarBackUrl  String?
+  licenseNumber   String?
+  licenseFrontUrl String?
+  licenseBackUrl  String?
+  selfieUrl       String?
+  status          KycStatus @default(PENDING)
+  rejectionReason String?
+  verifiedAt      DateTime?
+  verifiedById    String?
+  submittedAt     DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("kyc_documents")
+}
+
+// ─────────────────────────────────────────────
+// VEHICLE
+// ─────────────────────────────────────────────
+
+model Vehicle {
+  id              String        @id @default(uuid())
+  ownerId         String
+  brand           String
+  model           String
+  year            Int
+  vehicleType     VehicleType
+  fuelType        FuelType
+  transmission    Transmission
+  numberOfSeats   Int
+  color           String?
+  licensePlate    String        @unique
+  registrationNumber String     @unique
+  registrationExpiry DateTime?
+
+  // Verification docs
+  rcDocumentUrl        String?
+  insuranceDocumentUrl String?
+  insuranceExpiry      DateTime?
+  pucDocumentUrl       String?
+  pucExpiry            DateTime?
+
+  // Description & features
+  description     String?
+  features        String[]
+
+  // Location
+  city            String
+  state           String
+  country         String        @default("India")
+  latitude        Float?
+  longitude       Float?
+  address         String?
+
+  // Pricing
+  dailyRentalRate  Float
+  weeklyRentalRate Float?
+  monthlyRentalRate Float?
+  securityDeposit  Float
+
+  // Status
+  status          VehicleStatus @default(PENDING_APPROVAL)
+  isAvailableForRent  Boolean   @default(true)
+  isAvailableForSwap  Boolean   @default(true)
+  approvedAt      DateTime?
+  approvedById    String?
+  rejectionReason String?
+
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  // Relations (Phase 3 only)
+  owner        User                  @relation(fields: [ownerId], references: [id])
+  images       VehicleImage[]
+  availability VehicleAvailability[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([city])
+  @@index([vehicleType])
+  @@index([numberOfSeats])
+  @@index([isAvailableForRent])
+  @@index([isAvailableForSwap])
+  @@map("vehicles")
+}
+
+model VehicleImage {
+  id        String   @id @default(uuid())
+  vehicleId String
+  url       String
+  publicId  String
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("vehicle_images")
+}
+
+model VehicleAvailability {
+  id        String   @id @default(uuid())
+  vehicleId String
+  startDate DateTime
+  endDate   DateTime
+  isBlocked Boolean  @default(false)
+  reason    String?
+  createdAt DateTime @default(now())
+
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([startDate, endDate])
+  @@map("vehicle_availability")
+}

@@ -1,0 +1,176 @@
+### WheelSwap API Test Suite (Phase 1, 2, 3)
+@baseUrl = http://localhost:5000/api/v1
+
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. User Registration
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@wheelswap.in",
+  "password": "Password@123",
+  "name": "Piyush Gupta",
+  "phone": "9876543210"
+}
+
+### 3. User Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@wheelswap.in",
+  "password": "Password@123"
+}
+
+### Save Tokens from Login Response
+@accessToken = {{login.response.body.data.tokens.accessToken}}
+@refreshToken = {{login.response.body.data.tokens.refreshToken}}
+
+### 4. Get My Profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{accessToken}}
+
+### 5. Update Profile
+PATCH {{baseUrl}}/users/me
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "bio": "Vehicle Swapper enthusiast!"
+}
+
+### 6. KYC Status Check
+GET {{baseUrl}}/kyc/status
+Authorization: Bearer {{accessToken}}
+
+### 7. Vehicle Registration
+# @name createVehicle
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "brand": "Maruti Suzuki",
+  "model": "Swift",
+  "year": 2022,
+  "vehicleType": "HATCHBACK",
+  "fuelType": "PETROL",
+  "transmission": "MANUAL",
+  "numberOfSeats": 5,
+  "color": "Red",
+  "licensePlate": "MH12AB1234",
+  "registrationNumber": "RC-MH12-98765",
+  "dailyRentalRate": 1500,
+  "securityDeposit": 5000,
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId = {{createVehicle.response.body.data.id}}
+
+### 8. Search Vehicles (Public API)
+GET {{baseUrl}}/vehicles?city=Mumbai&vehicleType=HATCHBACK
+
+### 9. Get Vehicle Availability
+GET {{baseUrl}}/vehicles/{{vehicleId}}/availability
+
+### 10. Block Vehicle Dates (Owner API)
+POST {{baseUrl}}/vehicles/{{vehicleId}}/availability
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "startDate": "2026-08-01T00:00:00.000Z",
+  "endDate": "2026-08-05T00:00:00.000Z",
+  "isBlocked": true,
+  "reason": "Personal use / maintenance"
+}
+
+### 11. Admin Login (To get Admin Token)
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@wheelswap.in",
+  "password": "Admin@123"
+}
+
+@adminToken = {{adminLogin.response.body.data.tokens.accessToken}}
+
+### 12. Admin: List Vehicles Pending Approval
+GET {{baseUrl}}/vehicles/admin/list?status=PENDING_APPROVAL
+Authorization: Bearer {{adminToken}}
+
+### 13. Admin: Approve Registered Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ============================================================
+### SECOND USER & VEHICLE LIFECYCLE (For Swapping & P2P Tests)
+### ============================================================
+
+### 14. User 2 Registration
+# @name registerUser2
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user2@wheelswap.in",
+  "password": "Password@123",
+  "name": "Amit Kumar",
+  "phone": "9876543222"
+}
+
+### 15. User 2 Login
+# @name loginUser2
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user2@wheelswap.in",
+  "password": "Password@123"
+}
+
+@accessToken2 = {{loginUser2.response.body.data.tokens.accessToken}}
+
+### 16. User 2 Vehicle Registration
+# @name createVehicle2
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{accessToken2}}
+Content-Type: application/json
+
+{
+  "brand": "Honda",
+  "model": "City",
+  "year": 2021,
+  "vehicleType": "SEDAN",
+  "fuelType": "PETROL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 5,
+  "color": "White",
+  "licensePlate": "MH12CD5678",
+  "registrationNumber": "RC-MH12-12345",
+  "dailyRentalRate": 2000,
+  "securityDeposit": 7000,
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId2 = {{createVehicle2.response.body.data.id}}
+
+### 17. Admin: Approve User 2's Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId2}}/approve
+Authorization: Bearer {{adminToken}}
+
