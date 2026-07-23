@@ -23,6 +23,7 @@ async function bootstrap() {
     // ── Start HTTP server ─────────────────────────
     httpServer.listen(env.PORT, () => {
       logger.info(`🚀 WheelSwap API running on port ${env.PORT}`);
+      logger.info(`👉 Allowed CORS origins: ${env.FRONTEND_URL}, ${env.ADMIN_URL}`);
       logger.info(`📖 Swagger docs: http://localhost:${env.PORT}/api/docs`);
       logger.info(`🌍 Environment: ${env.NODE_ENV}`);
     });
