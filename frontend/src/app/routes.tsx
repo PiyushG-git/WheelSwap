@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { HomePage } from '../features/vehicles/pages/HomePage';
 import { SearchPage } from '../features/vehicles/pages/SearchPage';
 import { VehicleDetailPage } from '../features/vehicles/pages/VehicleDetailPage';
 import { MyVehiclesPage } from '../features/vehicles/pages/MyVehiclesPage';
@@ -13,7 +14,8 @@ export function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<SearchPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/vehicles" element={<SearchPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
 
