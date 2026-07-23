@@ -194,11 +194,6 @@ model Vehicle {
   longitude       Float?
   address         String?
 
-  // Pricing
-  dailyRentalRate  Float
-  weeklyRentalRate Float?
-  monthlyRentalRate Float?
-  securityDeposit  Float
 
   // Status
   status          VehicleStatus @default(PENDING_APPROVAL)

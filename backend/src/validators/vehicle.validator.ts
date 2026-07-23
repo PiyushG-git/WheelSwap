@@ -31,10 +31,6 @@ export const CreateVehicleSchema = z.object({
   address: z.string().max(300).optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
-  dailyRentalRate: z.number().positive('Daily rental rate must be positive'),
-  weeklyRentalRate: z.number().positive().optional(),
-  monthlyRentalRate: z.number().positive().optional(),
-  securityDeposit: z.number().positive('Security deposit must be positive'),
   isAvailableForRent: z.boolean().default(true),
   isAvailableForSwap: z.boolean().default(true),
 });
@@ -51,8 +47,6 @@ export const VehicleSearchSchema = z.object({
   fuelType: z.string().optional(),
   transmission: z.string().optional(),
   brand: z.string().optional(),
-  minPrice: z.string().optional().transform((v) => (v ? parseFloat(v) : undefined)),
-  maxPrice: z.string().optional().transform((v) => (v ? parseFloat(v) : undefined)),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   availableForRent: z
@@ -65,7 +59,7 @@ export const VehicleSearchSchema = z.object({
     .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
   page: z.string().default('1'),
   limit: z.string().default('12'),
-  sortBy: z.enum(['price_asc', 'price_desc', 'newest', 'rating']).default('newest'),
+  sortBy: z.enum(['newest', 'rating']).default('newest'),
 });
 
 export const SetAvailabilitySchema = z.object({

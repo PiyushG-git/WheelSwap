@@ -178,8 +178,6 @@ export const VehicleService = {
       fuelType: query.fuelType as FuelType,
       transmission: query.transmission as Transmission,
       brand: query.brand as string,
-      minPrice: query.minPrice as number,
-      maxPrice: query.maxPrice as number,
       isAvailableForRent: query.availableForRent as boolean,
       isAvailableForSwap: query.availableForSwap as boolean,
       sortBy: query.sortBy as string,

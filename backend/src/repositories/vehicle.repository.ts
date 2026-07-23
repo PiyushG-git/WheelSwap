@@ -31,8 +31,6 @@ export const vehicleListSelect = {
   color: true,
   city: true,
   state: true,
-  dailyRentalRate: true,
-  securityDeposit: true,
   isAvailableForRent: true,
   isAvailableForSwap: true,
   status: true,
@@ -155,8 +153,6 @@ export const VehicleRepository = {
     fuelType?: FuelType;
     transmission?: Transmission;
     brand?: string;
-    minPrice?: number;
-    maxPrice?: number;
     isAvailableForRent?: boolean;
     isAvailableForSwap?: boolean;
     skip?: number;
@@ -177,23 +173,12 @@ export const VehicleRepository = {
     if (filters.fuelType) where.fuelType = filters.fuelType;
     if (filters.transmission) where.transmission = filters.transmission;
     if (filters.brand) where.brand = { contains: filters.brand, mode: 'insensitive' };
-    if (filters.minPrice || filters.maxPrice) {
-      where.dailyRentalRate = {
-        ...(filters.minPrice && { gte: filters.minPrice }),
-        ...(filters.maxPrice && { lte: filters.maxPrice }),
-      };
-    }
     if (filters.isAvailableForRent !== undefined)
       where.isAvailableForRent = filters.isAvailableForRent;
     if (filters.isAvailableForSwap !== undefined)
       where.isAvailableForSwap = filters.isAvailableForSwap;
 
-    const orderBy: Prisma.VehicleOrderByWithRelationInput =
-      filters.sortBy === 'price_asc'
-        ? { dailyRentalRate: 'asc' }
-        : filters.sortBy === 'price_desc'
-        ? { dailyRentalRate: 'desc' }
-        : { createdAt: 'desc' };
+    const orderBy: Prisma.VehicleOrderByWithRelationInput = { createdAt: 'desc' };
 
     const [items, total] = await prisma.$transaction([
       prisma.vehicle.findMany({
