@@ -1,4 +1,18 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
+// Normalize URL to ensure it ends with /api/v1
+if (baseUrl) {
+  // Trim trailing slash
+  if (baseUrl.endsWith('/')) {
+    baseUrl = baseUrl.slice(0, -1);
+  }
+  // Check if it already ends with /api/v1
+  if (!baseUrl.endsWith('/api/v1')) {
+    baseUrl = `${baseUrl}/api/v1`;
+  }
+}
+
+export const API_BASE_URL = baseUrl;
 
 export const ENDPOINTS = {
   AUTH: {
