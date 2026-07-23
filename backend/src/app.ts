@@ -20,9 +20,31 @@ const app: Application = express();
 
 app.use(helmet());
 
+const allowedOrigins = [env.FRONTEND_URL, env.ADMIN_URL]
+  .filter(Boolean)
+  .map((url) => (url.endsWith('/') ? url.slice(0, -1) : url));
+
+const CORS_WHITELIST = [
+  'https://wheel-swap-chi.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:3001'
+];
+
 app.use(
   cors({
-    origin: [env.FRONTEND_URL, env.ADMIN_URL],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      
+      const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+      
+      if (allowedOrigins.includes(normalizedOrigin) || CORS_WHITELIST.includes(normalizedOrigin)) {
+        callback(null, true);
+      } else {
+        logger.warn(`⚠️ CORS blocked origin: ${origin}`);
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
