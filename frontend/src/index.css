@@ -873,3 +873,30 @@ p {
   font-size: 16px;
   color: var(--text-secondary);
 }
+
+/* ── City Filter Chips ────────────────────────── */
+
+.city-chip {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.city-chip:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background-color: var(--brand-light);
+}
+
+.city-chip.active {
+  background-color: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}

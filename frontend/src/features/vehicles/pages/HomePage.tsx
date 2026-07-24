@@ -1,19 +1,26 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
+
+const QUICK_CITIES = ['Delhi', 'Noida', 'Agra'];
 
 export function HomePage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [city, setCity] = useState('');
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (city.trim()) {
       navigate(`/vehicles?city=${encodeURIComponent(city.trim())}`);
     } else {
       navigate('/vehicles');
     }
+  };
+
+  const handleQuickCity = (cityName: string) => {
+    navigate(`/vehicles?city=${encodeURIComponent(cityName)}`);
   };
 
   return (
@@ -27,7 +34,7 @@ export function HomePage() {
             <span className="brand-accent">Explore New Journeys.</span>
           </h1>
           <p className="hero-subtitle">
-            Trade your everyday sedan for an SUV for the weekend, or rent premium vehicles directly from trusted local hosts. Secure, verified, and completely seamless.
+            Trade your everyday sedan for an SUV for the weekend, or rent premium vehicles directly from trusted local hosts in Delhi NCR, Noida, & Agra.
           </p>
 
           <form onSubmit={handleSearchSubmit} className="hero-search-box card">
@@ -36,16 +43,39 @@ export function HomePage() {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Where are you looking for a vehicle? (e.g. Mumbai)"
+                placeholder="Where are you looking for a vehicle? (e.g. Delhi, Noida, Agra)"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                required
               />
             </div>
             <button type="submit" className="btn btn-primary hero-search-btn">
               Search Vehicles
             </button>
           </form>
+
+          {/* Quick Search Tag Chips */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '13px', marginTop: '6px' }}>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Popular:</span>
+            {QUICK_CITIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => handleQuickCity(c)}
+                style={{
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                  padding: '4px 10px',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  color: 'var(--brand-primary)',
+                }}
+              >
+                📍 {c}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="hero-visual">
@@ -57,8 +87,8 @@ export function HomePage() {
               className="visual-img"
             />
             <div className="visual-details">
-              <h4>Ford Bronco Wildtrak</h4>
-              <p>Host: Piyush G. • verified Swap Partner</p>
+              <h4>Mahindra Thar 4x4</h4>
+              <p>Host: Karan M. • Verified Swap Partner in Delhi</p>
             </div>
           </div>
         </div>
@@ -98,7 +128,7 @@ export function HomePage() {
           <div>
             <span className="hero-tagline">Why Choose Us</span>
             <h2 style={{ fontSize: '32px', marginTop: '10px', marginBottom: '20px' }}>Built for Trusted Swapping</h2>
-            
+
             <div className="value-item">
               <span className="value-icon">🛡️</span>
               <div>
@@ -137,7 +167,7 @@ export function HomePage() {
       {/* ── 4. Call to Action ── */}
       <section className="cta-section">
         <h2>List your vehicle and start swapping today</h2>
-        <p>Join the trusted community of vehicle owners sharing rides in your city.</p>
+        <p>Join the trusted community of vehicle owners sharing rides in Delhi NCR, Noida, and Agra.</p>
         <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '24px' }}>
           {isAuthenticated ? (
             <Link to="/my-vehicles/add" className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '15px' }}>

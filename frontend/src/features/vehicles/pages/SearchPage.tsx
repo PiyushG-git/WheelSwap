@@ -1,47 +1,123 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useVehicles } from '../hooks/useVehicles';
+
+const POPULAR_CITIES = ['Delhi', 'Noida', 'Agra', 'Mumbai'];
+
+const DEFAULT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80';
 
 export function SearchPage() {
   const { list, loading, error, search } = useVehicles();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Search parameters state
-  const [city, setCity] = useState('Mumbai');
-  const [vehicleType, setVehicleType] = useState('');
-  const [fuelType, setFuelType] = useState('');
-  const [transmission, setTransmission] = useState('');
-  const [seats, setSeats] = useState('');
+  // Search parameters state from URL or defaults
+  const initialCity = searchParams.get('city') || '';
+  const [city, setCity] = useState(initialCity);
+  const [vehicleType, setVehicleType] = useState(searchParams.get('vehicleType') || '');
+  const [fuelType, setFuelType] = useState(searchParams.get('fuelType') || '');
+  const [transmission, setTransmission] = useState(searchParams.get('transmission') || '');
+  const [seats, setSeats] = useState(searchParams.get('numberOfSeats') || '');
 
+  // Keep state in sync with URL parameters
   useEffect(() => {
-    // Initial search
-    search({ city });
-  }, []);
-
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault();
+    const currentCity = searchParams.get('city') || '';
+    setCity(currentCity);
+    
     const params: Record<string, any> = {};
-    if (city) params.city = city;
+    if (currentCity) params.city = currentCity;
     if (vehicleType) params.vehicleType = vehicleType;
     if (fuelType) params.fuelType = fuelType;
     if (transmission) params.transmission = transmission;
     if (seats) params.numberOfSeats = seats;
 
     search(params);
+  }, [searchParams]);
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    executeSearch(city, vehicleType, fuelType, transmission, seats);
+  };
+
+  const executeSearch = (
+    cityVal: string,
+    vTypeVal: string,
+    fTypeVal: string,
+    transVal: string,
+    seatsVal: string
+  ) => {
+    const newSearchParams = new URLSearchParams();
+    if (cityVal) newSearchParams.set('city', cityVal);
+    if (vTypeVal) newSearchParams.set('vehicleType', vTypeVal);
+    if (fTypeVal) newSearchParams.set('fuelType', fTypeVal);
+    if (transVal) newSearchParams.set('transmission', transVal);
+    if (seatsVal) newSearchParams.set('numberOfSeats', seatsVal);
+
+    setSearchParams(newSearchParams);
+  };
+
+  const handleCityChipClick = (selectedCity: string) => {
+    const targetCity = city === selectedCity ? '' : selectedCity;
+    setCity(targetCity);
+    executeSearch(targetCity, vehicleType, fuelType, transmission, seats);
+  };
+
+  const handleResetFilters = () => {
+    setCity('');
+    setVehicleType('');
+    setFuelType('');
+    setTransmission('');
+    setSeats('');
+    setSearchParams(new URLSearchParams());
   };
 
   return (
     <div className="main-content">
-      <div style={{ marginBottom: '30px' }}>
+      {/* Header & Quick City Chips */}
+      <div style={{ marginBottom: '25px' }}>
         <h1>Find Your Next Wheel Swap</h1>
-        <p>Browse clean, verified vehicles available for swap and rent in your location.</p>
+        <p>Browse clean, verified vehicles available for swap and rent in top cities.</p>
+
+        {/* Quick Filter City Chips */}
+        <div className="city-chips-container" style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)' }}>Quick Select:</span>
+          <button
+            type="button"
+            onClick={() => handleCityChipClick('')}
+            className={`city-chip ${city === '' ? 'active' : ''}`}
+          >
+            All Cities
+          </button>
+          {POPULAR_CITIES.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => handleCityChipClick(c)}
+              className={`city-chip ${city.toLowerCase() === c.toLowerCase() ? 'active' : ''}`}
+            >
+              📍 {c}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="search-container">
         {/* Left Side: Filter Form */}
         <form onSubmit={handleSearch} className="card filters-card">
-          <h3 style={{ marginBottom: '15px' }}>Filters</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h3 style={{ margin: 0 }}>Filters</h3>
+            {(city || vehicleType || fuelType || transmission || seats) && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="btn btn-secondary"
+                style={{ fontSize: '11px', padding: '4px 8px' }}
+              >
+                Reset All
+              </button>
+            )}
+          </div>
 
           <div className="filter-section">
             <div className="form-group">
@@ -49,7 +125,7 @@ export function SearchPage() {
               <input
                 type="text"
                 className="form-input"
-                placeholder="Mumbai, Pune, Delhi..."
+                placeholder="Delhi, Noida, Agra..."
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
               />
@@ -126,13 +202,26 @@ export function SearchPage() {
 
         {/* Right Side: Search Results */}
         <div className="search-results-section">
+          {/* Results Header */}
+          {!loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                {list.length} {list.length === 1 ? 'vehicle' : 'vehicles'} available {city ? `in "${city}"` : 'across all locations'}
+              </span>
+              <span className="badge badge-approved" style={{ fontSize: '11px' }}>KYC Verified Hosts Only</span>
+            </div>
+          )}
+
           {loading && <div style={{ textAlign: 'center', marginTop: '40px' }}><div className="loader"></div></div>}
           {error && <div className="alert alert-danger">{error}</div>}
 
           {!loading && list.length === 0 && (
             <div className="card" style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' }}>
               <h3>No Vehicles Found</h3>
-              <p style={{ marginTop: '8px' }}>Try searching in a different city or removing filter settings.</p>
+              <p style={{ marginTop: '8px', marginBottom: '16px' }}>Try selecting a different city like Delhi, Noida, or Agra.</p>
+              <button onClick={handleResetFilters} className="btn btn-secondary">
+                Clear Filters
+              </button>
             </div>
           )}
 
@@ -140,25 +229,29 @@ export function SearchPage() {
             <div className="grid-3">
               {list.map((vehicle) => {
                 const primaryImage = vehicle.images?.find((img) => img.isPrimary) || vehicle.images?.[0];
-                
+                const displayImg = primaryImage?.url || DEFAULT_IMAGE_FALLBACK;
+
                 return (
                   <div
                     key={vehicle.id}
                     className="vehicle-card"
                     onClick={() => navigate(`/vehicles/${vehicle.id}`)}
                   >
-                    {primaryImage ? (
-                      <img src={primaryImage.url} alt={`${vehicle.brand} ${vehicle.model}`} className="vehicle-card-img" />
-                    ) : (
-                      <div className="vehicle-card-img-placeholder">No Image Available</div>
-                    )}
-                    
+                    <img
+                      src={displayImg}
+                      alt={`${vehicle.brand} ${vehicle.model}`}
+                      className="vehicle-card-img"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = DEFAULT_IMAGE_FALLBACK;
+                      }}
+                    />
+
                     <div className="vehicle-card-content">
                       <div className="vehicle-card-header">
                         <span className="vehicle-card-title">{vehicle.brand} {vehicle.model}</span>
                         <span className="vehicle-card-badge">{vehicle.year}</span>
                       </div>
-                      
+
                       <div className="vehicle-card-location">
                         📍 {vehicle.city}, {vehicle.state}
                       </div>

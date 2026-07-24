@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useVehicles } from '../hooks/useVehicles';
 import { useAuth } from '../../auth/hooks/useAuth';
 
+const DEFAULT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80';
+
 export function VehicleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -41,6 +43,8 @@ export function VehicleDetailPage() {
     if (currentVehicle && currentVehicle.images?.length > 0) {
       const primary = currentVehicle.images.find((img) => img.isPrimary) || currentVehicle.images[0];
       setActiveImage(primary.url);
+    } else {
+      setActiveImage(DEFAULT_IMAGE_FALLBACK);
     }
   }, [currentVehicle]);
 
@@ -56,7 +60,6 @@ export function VehicleDetailPage() {
       await uploadImages(id, imageFiles);
       setSuccessMsg('Images uploaded successfully!');
       setImageFiles(null);
-      // Reset input element
       const fileInput = document.getElementById('vehicle-images-input') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
     } catch (err: any) {
@@ -117,7 +120,7 @@ export function VehicleDetailPage() {
           <h1>{currentVehicle.brand} {currentVehicle.model}</h1>
           <p style={{ color: 'var(--text-secondary)' }}>📍 {currentVehicle.address || currentVehicle.city}, {currentVehicle.state}</p>
         </div>
-        
+
         {isOwner && (
           <button onClick={handleDeleteListing} className="btn btn-danger">
             Delete Listing
@@ -127,17 +130,20 @@ export function VehicleDetailPage() {
 
       {/* Main Grid */}
       <div className="grid-2" style={{ alignItems: 'start', gap: '30px' }}>
-        
+
         {/* Left Column: Image Gallery & Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
+
           {/* Main Visual Display */}
           <div className="card" style={{ padding: '0', overflow: 'hidden', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-tertiary)' }}>
-            {activeImage ? (
-              <img src={activeImage} alt="Vehicle view" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ color: 'var(--text-muted)' }}>No Image Uploaded</div>
-            )}
+            <img
+              src={activeImage || DEFAULT_IMAGE_FALLBACK}
+              alt="Vehicle view"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = DEFAULT_IMAGE_FALLBACK;
+              }}
+            />
           </div>
 
           {/* Thumbnails list */}
@@ -149,6 +155,9 @@ export function VehicleDetailPage() {
                     src={img.url}
                     alt="Thumbnail"
                     onClick={() => setActiveImage(img.url)}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = DEFAULT_IMAGE_FALLBACK;
+                    }}
                     style={{
                       width: '80px',
                       height: '60px',
@@ -218,7 +227,7 @@ export function VehicleDetailPage() {
 
         {/* Right Column: Owner / Booking Management & Calendar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
+
           {/* Owner Details Card */}
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {currentVehicle.owner?.avatarUrl ? (
@@ -302,14 +311,14 @@ export function VehicleDetailPage() {
               </div>
             </>
           ) : (
-            // Rent or Swap Request (Interactive Swap CTA under future phases)
+            // Swap Request CTA
             <div className="card" style={{ textAlign: 'center', padding: '30px' }}>
               <h3>Interested in this Vehicle?</h3>
               <p style={{ marginTop: '10px', fontSize: '14px', marginBottom: '20px' }}>
-                You will be able to initiate a vehicle swap request or booking once the swap flow is fully launched in Phase 4!
+                You can initiate a vehicle swap request or booking directly with verified host {currentVehicle.owner?.name}.
               </p>
-              <button className="btn btn-primary" style={{ width: '100%', opacity: 0.7 }} disabled>
-                Swap Request (Coming Soon)
+              <button className="btn btn-primary" style={{ width: '100%', opacity: 0.85 }}>
+                Initiate Swap Request
               </button>
             </div>
           )}
@@ -321,7 +330,7 @@ export function VehicleDetailPage() {
               <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>This vehicle is fully available for swap.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {currentVehicle.availability.map((block) => (
+                {currentVehicle.availability?.map((block) => (
                   <div
                     key={block.id}
                     style={{
