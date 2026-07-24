@@ -171,15 +171,19 @@ export const VehicleService = {
     const cached = await cache.get<unknown>(cacheKey);
     if (cached) return cached;
 
+    const numberOfSeats = query.numberOfSeats ? Number(query.numberOfSeats) : undefined;
+    const isAvailableForRent = query.availableForRent !== undefined ? query.availableForRent === 'true' : undefined;
+    const isAvailableForSwap = query.availableForSwap !== undefined ? query.availableForSwap === 'true' : undefined;
+
     const { items, total } = await VehicleRepository.search({
       city: query.city as string,
       vehicleType: query.vehicleType as VehicleType,
-      numberOfSeats: query.numberOfSeats as number,
+      numberOfSeats: Number.isNaN(numberOfSeats) ? undefined : numberOfSeats,
       fuelType: query.fuelType as FuelType,
       transmission: query.transmission as Transmission,
       brand: query.brand as string,
-      isAvailableForRent: query.availableForRent as boolean,
-      isAvailableForSwap: query.availableForSwap as boolean,
+      isAvailableForRent,
+      isAvailableForSwap,
       sortBy: query.sortBy as string,
       skip,
       take: limit,
