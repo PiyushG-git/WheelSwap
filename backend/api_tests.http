@@ -170,3 +170,857 @@ Content-Type: application/json
 PATCH {{baseUrl}}/vehicles/admin/{{vehicleId2}}/approve
 Authorization: Bearer {{adminToken}}
 
+
+### ============================================================
+### 10 ADDITIONAL USERS, KYC & VEHICLES SEEDING SUITE
+### ============================================================
+
+### ── USER 3: Rajesh Sharma (SUV - Mahindra Thar) ──
+
+# @name registerUser3
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user3@wheelswap.in",
+  "password": "Password@123",
+  "name": "Rajesh Sharma",
+  "phone": "9876543203"
+}
+
+### Login User 3
+# @name loginUser3
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user3@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token3 = {{loginUser3.response.body.data.tokens.accessToken}}
+@userId3 = {{loginUser3.response.body.data.user.id}}
+
+### Submit KYC User 3
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token3}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223303
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+DL-1420220000003
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 3 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId3}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 3 Register Vehicle (Mahindra Thar)
+# @name createVehicle3
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "brand": "Mahindra",
+  "model": "Thar",
+  "year": 2022,
+  "vehicleType": "SUV",
+  "fuelType": "DIESEL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 4,
+  "color": "Black",
+  "licensePlate": "MH12XY3003",
+  "registrationNumber": "RC-MH12-98003",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId3 = {{createVehicle3.response.body.data.id}}
+
+### Admin: Approve User 3 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId3}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 4: Priya Patel (Hatchback - Hyundai i20) ──
+
+# @name registerUser4
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user4@wheelswap.in",
+  "password": "Password@123",
+  "name": "Priya Patel",
+  "phone": "9876543204"
+}
+
+### Login User 4
+# @name loginUser4
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user4@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token4 = {{loginUser4.response.body.data.tokens.accessToken}}
+@userId4 = {{loginUser4.response.body.data.user.id}}
+
+### Submit KYC User 4
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token4}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223304
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+GJ-0120220000004
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 4 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId4}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 4 Register Vehicle (Hyundai i20)
+# @name createVehicle4
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token4}}
+Content-Type: application/json
+
+{
+  "brand": "Hyundai",
+  "model": "i20",
+  "year": 2021,
+  "vehicleType": "HATCHBACK",
+  "fuelType": "PETROL",
+  "transmission": "MANUAL",
+  "numberOfSeats": 5,
+  "color": "Red",
+  "licensePlate": "GJ01AB4004",
+  "registrationNumber": "RC-GJ01-98004",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId4 = {{createVehicle4.response.body.data.id}}
+
+### Admin: Approve User 4 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId4}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 5: Vikram Singh (Sedan - Honda City) ──
+
+# @name registerUser5
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user5@wheelswap.in",
+  "password": "Password@123",
+  "name": "Vikram Singh",
+  "phone": "9876543205"
+}
+
+### Login User 5
+# @name loginUser5
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user5@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token5 = {{loginUser5.response.body.data.tokens.accessToken}}
+@userId5 = {{loginUser5.response.body.data.user.id}}
+
+### Submit KYC User 5
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token5}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223305
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+DL-0320200000005
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 5 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId5}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 5 Register Vehicle (Honda City)
+# @name createVehicle5
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token5}}
+Content-Type: application/json
+
+{
+  "brand": "Honda",
+  "model": "City",
+  "year": 2020,
+  "vehicleType": "SEDAN",
+  "fuelType": "PETROL",
+  "transmission": "MANUAL",
+  "numberOfSeats": 5,
+  "color": "Silver",
+  "licensePlate": "DL3CAA5005",
+  "registrationNumber": "RC-DL03-98005",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId5 = {{createVehicle5.response.body.data.id}}
+
+### Admin: Approve User 5 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId5}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 6: Ananya Rao (Sedan - Hyundai Verna) ──
+
+# @name registerUser6
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user6@wheelswap.in",
+  "password": "Password@123",
+  "name": "Ananya Rao",
+  "phone": "9876543206"
+}
+
+### Login User 6
+# @name loginUser6
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user6@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token6 = {{loginUser6.response.body.data.tokens.accessToken}}
+@userId6 = {{loginUser6.response.body.data.user.id}}
+
+### Submit KYC User 6
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token6}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223306
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+KA-5120230000006
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 6 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId6}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 6 Register Vehicle (Hyundai Verna)
+# @name createVehicle6
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token6}}
+Content-Type: application/json
+
+{
+  "brand": "Hyundai",
+  "model": "Verna",
+  "year": 2023,
+  "vehicleType": "SEDAN",
+  "fuelType": "PETROL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 5,
+  "color": "White",
+  "licensePlate": "KA51MB6006",
+  "registrationNumber": "RC-KA51-98006",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId6 = {{createVehicle6.response.body.data.id}}
+
+### Admin: Approve User 6 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId6}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 7: Sanjay Dutt (SUV - Tata Safari) ──
+
+# @name registerUser7
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user7@wheelswap.in",
+  "password": "Password@123",
+  "name": "Sanjay Dutt",
+  "phone": "9876543207"
+}
+
+### Login User 7
+# @name loginUser7
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user7@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token7 = {{loginUser7.response.body.data.tokens.accessToken}}
+@userId7 = {{loginUser7.response.body.data.user.id}}
+
+### Submit KYC User 7
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token7}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223307
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+MH-0220190000007
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 7 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId7}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 7 Register Vehicle (Tata Safari)
+# @name createVehicle7
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token7}}
+Content-Type: application/json
+
+{
+  "brand": "Tata",
+  "model": "Safari",
+  "year": 2021,
+  "vehicleType": "SUV",
+  "fuelType": "DIESEL",
+  "transmission": "MANUAL",
+  "numberOfSeats": 7,
+  "color": "Blue",
+  "licensePlate": "MH02CD7007",
+  "registrationNumber": "RC-MH02-98007",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId7 = {{createVehicle7.response.body.data.id}}
+
+### Admin: Approve User 7 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId7}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 8: Neha Gupta (SUV - Hyundai Creta) ──
+
+# @name registerUser8
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user8@wheelswap.in",
+  "password": "Password@123",
+  "name": "Neha Gupta",
+  "phone": "9876543208"
+}
+
+### Login User 8
+# @name loginUser8
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user8@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token8 = {{loginUser8.response.body.data.tokens.accessToken}}
+@userId8 = {{loginUser8.response.body.data.user.id}}
+
+### Submit KYC User 8
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token8}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223308
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+HR-2620210000008
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 8 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId8}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 8 Register Vehicle (Hyundai Creta)
+# @name createVehicle8
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token8}}
+Content-Type: application/json
+
+{
+  "brand": "Hyundai",
+  "model": "Creta",
+  "year": 2022,
+  "vehicleType": "SUV",
+  "fuelType": "PETROL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 5,
+  "color": "Gray",
+  "licensePlate": "HR26EF8008",
+  "registrationNumber": "RC-HR26-98008",
+  "city": "Delhi",
+  "state": "Delhi",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId8 = {{createVehicle8.response.body.data.id}}
+
+### Admin: Approve User 8 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId8}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 9: Rohan Mehta (Two Wheeler - Royal Enfield Classic) ──
+
+# @name registerUser9
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user9@wheelswap.in",
+  "password": "Password@123",
+  "name": "Rohan Mehta",
+  "phone": "9876543209"
+}
+
+### Login User 9
+# @name loginUser9
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user9@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token9 = {{loginUser9.response.body.data.tokens.accessToken}}
+@userId9 = {{loginUser9.response.body.data.user.id}}
+
+### Submit KYC User 9
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token9}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223309
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+GJ-0320220000009
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 9 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId9}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 9 Register Vehicle (Royal Enfield Classic)
+# @name createVehicle9
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token9}}
+Content-Type: application/json
+
+{
+  "brand": "Royal Enfield",
+  "model": "Classic 350",
+  "year": 2021,
+  "vehicleType": "TWO_WHEELER",
+  "fuelType": "PETROL",
+  "transmission": "MANUAL",
+  "numberOfSeats": 2,
+  "color": "Chrome Black",
+  "licensePlate": "GJ03GH9009",
+  "registrationNumber": "RC-GJ03-98009",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId9 = {{createVehicle9.response.body.data.id}}
+
+### Admin: Approve User 9 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId9}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 10: Deepa Nair (Hatchback - Maruti Baleno) ──
+
+# @name registerUser10
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user10@wheelswap.in",
+  "password": "Password@123",
+  "name": "Deepa Nair",
+  "phone": "9876543210"
+}
+
+### Login User 10
+# @name loginUser10
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user10@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token10 = {{loginUser10.response.body.data.tokens.accessToken}}
+@userId10 = {{loginUser10.response.body.data.user.id}}
+
+### Submit KYC User 10
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token10}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223310
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+KL-0720200000010
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 10 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId10}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 10 Register Vehicle (Maruti Baleno)
+# @name createVehicle10
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token10}}
+Content-Type: application/json
+
+{
+  "brand": "Maruti Suzuki",
+  "model": "Baleno",
+  "year": 2020,
+  "vehicleType": "HATCHBACK",
+  "fuelType": "PETROL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 5,
+  "color": "Blue",
+  "licensePlate": "KL07JK1010",
+  "registrationNumber": "RC-KL07-98010",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId10 = {{createVehicle10.response.body.data.id}}
+
+### Admin: Approve User 10 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId10}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 11: Arjun Reddy (SUV - Toyota Fortuner) ──
+
+# @name registerUser11
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user11@wheelswap.in",
+  "password": "Password@123",
+  "name": "Arjun Reddy",
+  "phone": "9876543211"
+}
+
+### Login User 11
+# @name loginUser11
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user11@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token11 = {{loginUser11.response.body.data.tokens.accessToken}}
+@userId11 = {{loginUser11.response.body.data.user.id}}
+
+### Submit KYC User 11
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token11}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223311
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+TS-0920210000011
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 11 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId11}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 11 Register Vehicle (Toyota Fortuner)
+# @name createVehicle11
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token11}}
+Content-Type: application/json
+
+{
+  "brand": "Toyota",
+  "model": "Fortuner",
+  "year": 2021,
+  "vehicleType": "SUV",
+  "fuelType": "DIESEL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 7,
+  "color": "Bronze",
+  "licensePlate": "TS09LM1111",
+  "registrationNumber": "RC-TS09-98011",
+  "city": "Delhi",
+  "state": "Delhi",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId11 = {{createVehicle11.response.body.data.id}}
+
+### Admin: Approve User 11 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId11}}/approve
+Authorization: Bearer {{adminToken}}
+
+
+### ── USER 12: Sneha Patil (Two Wheeler - Honda Activa) ──
+
+# @name registerUser12
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user12@wheelswap.in",
+  "password": "Password@123",
+  "name": "Sneha Patil",
+  "phone": "9876543212"
+}
+
+### Login User 12
+# @name loginUser12
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user12@wheelswap.in",
+  "password": "Password@123"
+}
+
+@token12 = {{loginUser12.response.body.data.tokens.accessToken}}
+@userId12 = {{loginUser12.response.body.data.user.id}}
+
+### Submit KYC User 12
+POST {{baseUrl}}/kyc/submit
+Authorization: Bearer {{token12}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="aadhaarNumber"
+
+111122223312
+--boundary
+Content-Disposition: form-data; name="licenseNumber"
+
+MH-1420220000012
+--boundary
+Content-Disposition: form-data; name="aadhaarFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary
+Content-Disposition: form-data; name="licenseFront"; filename="test_doc.jpg"
+Content-Type: image/jpeg
+
+< ./test_doc.jpg
+--boundary--
+
+### Admin: Approve User 12 KYC
+PATCH {{baseUrl}}/kyc/admin/{{userId12}}/approve
+Authorization: Bearer {{adminToken}}
+
+### User 12 Register Vehicle (Honda Activa)
+# @name createVehicle12
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{token12}}
+Content-Type: application/json
+
+{
+  "brand": "Honda",
+  "model": "Activa 6G",
+  "year": 2022,
+  "vehicleType": "TWO_WHEELER",
+  "fuelType": "PETROL",
+  "transmission": "AUTOMATIC",
+  "numberOfSeats": 2,
+  "color": "Gray",
+  "licensePlate": "MH14NP1212",
+  "registrationNumber": "RC-MH14-98012",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "isAvailableForRent": true,
+  "isAvailableForSwap": true
+}
+
+@vehicleId12 = {{createVehicle12.response.body.data.id}}
+
+### Admin: Approve User 12 Vehicle
+PATCH {{baseUrl}}/vehicles/admin/{{vehicleId12}}/approve
+Authorization: Bearer {{adminToken}}
+
